@@ -4,11 +4,11 @@
 
 ## TODO
 
-- [ ] Load hosts list in compile-time and store it as static string
+- [ ] Load hosts list at compile-time and store it as static string
 - [X] Adapt sherlock-py json model
 - [X] Write some tests
 - [X] Rework junky init-code
-- [ ] Handly all possible scenarious of response
+- [ ] Handle all possible scenarious of response
 - [ ] MPSC
 - [ ] logging and reports generation 
 - [ ] Documentation
