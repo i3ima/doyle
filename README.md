@@ -10,6 +10,7 @@
 - [X] Rework junky init-code
 - [ ] Handly all possible scenarious of response
 - [ ] MPSC
+- [ ] logging and reports generation 
 - [ ] Documentation
 - [ ] Add error handling. But should I?
 - [ ] Add dockerfile
