@@ -1,10 +1,15 @@
-# Watson, social-networks huntdown tool, insipred by sherlock-py
+# Watson, a tool for searching social accounts, insipred by sherlock-py
+
+## At the moment, the code is very crappy and some of the core features are not working properly
 
 ## TODO
 
 - [ ] Load hosts list in compile-time and store it as static string
-- [ ] Adapt sherlock-py json model
+- [X] Adapt sherlock-py json model
 - [X] Write some tests
-- [ ] Rework junky init-code
-- [ ] Add error handling
+- [X] Rework junky init-code
+- [ ] Handly all possible scenarious of response
+- [ ] MPSC
+- [ ] Documentation
+- [ ] Add error handling. But should I?
 - [ ] Add dockerfile
