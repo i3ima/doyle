@@ -1,17 +1,13 @@
-use async_trait::async_trait;
-use colored::Colorize;
-use rayon::prelude::*;
-use reqwest::StatusCode;
 pub use crate::watson::*;
-use futures::future::join_all;
-use std::future::Future;
-use std::pin::Pin;
-use std::time::Instant;
+use colored::Colorize;
+pub use reqwest::{Response, StatusCode};
+use std::collections::HashMap;
 use std::fmt::Display;
+use std::fs::File;
+use std::io::BufReader;
+use std::time::Instant;
 
 mod watson;
-
-pub use crate::watson::*;
 
 impl Display for CheckResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -23,83 +19,119 @@ impl Display for CheckResult {
         }
     }
 }
+
 impl Watson for WatsonData {
-    async fn check_host(&self, host: &str) -> CheckResult {
-        let check_url = host.to_string() + &self.username;
-        println!("Checking - {}", &check_url);
+    fn check_host(&self, host: &HostDetails) -> CheckResult {
+        let check_url = host.url.replace("{}", &self.username);
         let now = Instant::now();
+        let request = match reqwest::blocking::get(&check_url) {
+            Ok(resp) => resp,
+            Err(error) => {
+                println!("Failed host check because of: {}", error);
+                return CheckResult {
+                    url: check_url,
+                    status: Status::NotFound,
+                    execution_time: 0,
+                };
+            }
+        };
+        let elapsed = now.elapsed().as_millis();
+        let url = request.url().to_string();
         // rn this is stupid asf
         // TODO: Replace this with more clever solution
-        match reqwest::get(&check_url).await?.status() {
-            StatusCode::OK => CheckResult {
-                url: check_url,
-                status: Status::Found,
-                execution_time: now.elapsed().as_millis(),
-            },
-            StatusCode::NOT_FOUND => CheckResult {
-                url: check_url,
-                status: Status::NotFound,
-                execution_time: now.elapsed().as_millis(),
-            },
+        match host {
+            HostDetails {
+                error_type: ErrorType::StatusCode,
+                ..
+            } => {
+                if request.status().is_success() {
+                    CheckResult {
+                        execution_time: elapsed,
+                        status: Status::Found,
+                        url,
+                    }
+                } else {
+                    CheckResult {
+                        execution_time: elapsed,
+                        status: Status::NotFound,
+                        url,
+                    }
+                }
+            }
+            HostDetails {
+                error_msg: m,
+                error_type: ErrorType::Msg,
+                ..
+            } => {
+                let m = match m {
+                    Some(msg) => msg,
+                    None => panic!("No msg"),
+                };
+                if request.text().unwrap().contains(&m.msgs[0]) {
+                    CheckResult {
+                        execution_time: elapsed,
+                        status: Status::Found,
+                        url,
+                    }
+                } else {
+                    CheckResult {
+                        execution_time: elapsed,
+                        status: Status::NotFound,
+                        url,
+                    }
+                }
+            }
             _ => CheckResult {
-                url: check_url,
+                execution_time: elapsed,
                 status: Status::NotFound,
-                execution_time: now.elapsed().as_millis(),
+                url,
             },
         }
     }
 
-    async fn check_hosts(&self, hosts: &Vec<String>) -> Vec<CheckResult> {
-        let futures: Vec<Pin<Box<dyn Future<Output = CheckResult> + Send + '_>>> = hosts
+    fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult> {
+        hosts
             .iter()
-            .map(move |host| self.check_host(host))
-            .collect();
-        join_all(futures).await
+            .map(move |host| {
+                let result = self.check_host(&host.1);
+                println!("{}", result);
+                result
+            })
+            .collect()
     }
 
-    fn new(username: &str, hosts: Vec<String>) -> WatsonData {
-        WatsonData {
-            username: username.to_string(),
-            hosts,
-        }
+    fn builder() -> WatsonBuilder {
+        WatsonBuilder::default()
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn check_host_test() {
-        let watson: WatsonData = Watson::new("i3ima", vec![String::from("https://vk.com/")]);
-        assert_eq!(
-            CheckResult {
-                status: Status::Found,
-                url: String::from("https://vk.com/") + &watson.username,
-                execution_time: 0,
-            },
-            watson.check_host("https://vk.com/")
-        )
+impl WatsonBuilder {
+    pub fn load_json(mut self, data: Option<Vec<(String, HostDetails)>>) -> Self {
+        if let Some(json) = data {
+            println!("Using JSON from user input");
+            self.hosts = json;
+        } else {
+            let file = File::open("./data.json").unwrap();
+            let reader = BufReader::new(file);
+            let h: HashMap<String, HostDetails> =
+                serde_json::from_reader(reader).expect("Cannot read json");
+            println!("Using JSON from file");
+            self.hosts = h.into_iter().collect();
+        }
+        self
     }
 
-    #[test]
-    fn check_hosts_test() {
-        let username = "i3ima";
-        let hosts = vec![
-            String::from("https://vk.com/"),
-            String::from("https://github.com/"),
-        ];
+    pub fn new(username: &str) -> WatsonBuilder {
+        WatsonBuilder {
+            username: username.to_string(),
+            hosts: vec![],
+        }
+    }
 
-        let results: &Vec<CheckResult> = &hosts
-            .iter()
-            .map(|host| CheckResult {
-                status: Status::Found,
-                url: format!("{}{}", host, username),
-                execution_time: 0,
-            })
-            .collect();
-        let watson: WatsonData = Watson::new(username, hosts);
-
-        assert_eq!(*results, watson.check_hosts(&watson.hosts))
+    pub fn build(self) -> WatsonData {
+        WatsonData {
+            hosts: self.hosts,
+            username: self.username,
+        }
     }
 }
