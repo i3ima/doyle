@@ -2,17 +2,21 @@ use watson::*;
 
 #[test]
 fn find_accounts() {
-    let username = "i3ima";
-    let hosts = vec![
-        String::from("https://vk.com/"),
-        String::from("https://github.com/"),
-    ];
-    let watson: WatsonData = Watson::new("i3ima", hosts);
+    let host = vec![(
+        "vkontakte".to_string(),
+        HostDetails {
+            error_type: ErrorType::StatusCode,
+            error_msg: None,
+            url: "https://vk.com/{}".to_string(),
+        },
+    )];
+    let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(Some(host)).build();
     assert_eq!(
         CheckResult {
             status: Status::Found,
-            url: watson.hosts[0].to_string() + &username.to_string()
-        },
-        watson.check_host(&watson.hosts[0])
+            url: format!("{}{}", "https://vk.com/", watson.username),
+            execution_time: 0
+        }.status,
+        watson.check_hosts(&watson.hosts)[0].status
     )
 }
