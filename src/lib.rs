@@ -3,8 +3,6 @@ use colored::Colorize;
 pub use reqwest::{Response, StatusCode};
 use std::collections::HashMap;
 use std::fmt::Display;
-use std::fs::File;
-use std::io::BufReader;
 use std::time::Instant;
 
 mod watson;
@@ -111,10 +109,9 @@ impl WatsonBuilder {
             println!("Using JSON from user input");
             self.hosts = json;
         } else {
-            let file = File::open("./data.json").unwrap();
-            let reader = BufReader::new(file);
+            let json = include_str!("../assets/data.json");
             let h: HashMap<String, HostDetails> =
-                serde_json::from_reader(reader).expect("Cannot read json");
+                serde_json::from_str(json).expect("Cannot read json");
             println!("Using JSON from file");
             self.hosts = h.into_iter().collect();
         }

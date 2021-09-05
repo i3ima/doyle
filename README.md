@@ -4,7 +4,7 @@
 
 ## TODO
 
-- [ ] Load hosts list at compile-time and store it as static string
+- [X] Load hosts list at compile-time and store it as static string
 - [X] Adapt sherlock-py json model
 - [X] Write some tests
 - [X] Rework junky init-code
