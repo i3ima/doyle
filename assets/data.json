@@ -716,11 +716,6 @@
     "errorType":"message",
     "url":"https://quizlet.com/{}"
   },
-  "Quora":{
-    "errorMsg":"Page Not Found",
-    "errorType":"message",
-    "url":"https://www.quora.com/profile/{}"
-  },
   "Raidforums":{
     "errorType":"status_code",
     "url":"https://raidforums.com/User-{}"
