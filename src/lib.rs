@@ -1,5 +1,6 @@
 pub use crate::watson::*;
 use colored::Colorize;
+use reqwest::header;
 pub use reqwest::{Response, StatusCode};
 use std::collections::HashMap;
 use std::fmt::Display;
@@ -22,7 +23,15 @@ impl Watson for WatsonData {
     fn check_host(&self, host: &HostDetails) -> CheckResult {
         let check_url = host.url.replace("{}", &self.username);
         let now = Instant::now();
-        let request = match reqwest::blocking::get(&check_url) {
+        let mut headers = header::HeaderMap::new();
+        // Insert user-agent, cuz some websites are retards
+        headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"));
+
+        let client = reqwest::blocking::Client::builder()
+            .default_headers(headers)
+            .build().unwrap();
+
+        let request = match client.get(&check_url).send() {
             Ok(resp) => resp,
             Err(error) => {
                 println!("Failed host check because of: {}", error);
@@ -33,8 +42,10 @@ impl Watson for WatsonData {
                 };
             }
         };
+
         let elapsed = now.elapsed().as_millis();
         let url = request.url().to_string();
+
         // rn this is stupid asf
         // TODO: Replace this with more clever solution
         match host {
