@@ -8,9 +8,10 @@
 - [X] Adapt sherlock-py json model
 - [X] Write some tests
 - [X] Rework junky init-code
-- [ ] Handle all possible scenarious of response
+- [X] Handle all possible scenarious of response
 - [ ] MPSC
 - [ ] logging and reports generation 
 - [ ] Documentation
 - [ ] Add error handling. But should I?
 - [ ] Add dockerfile
+- [ ] Interactive search after full completion

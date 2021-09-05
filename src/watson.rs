@@ -66,6 +66,8 @@ pub enum ErrorType {
 pub struct HostDetails {
     #[serde(alias = "errorMsg")]
     pub error_msg: Option<ErrorMsg>,
+    #[serde(alias = "urlProbe")]
+    pub url_probe: Option<String>,
 
     #[serde(alias = "errorType")]
     pub error_type: ErrorType,

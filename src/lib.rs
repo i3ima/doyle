@@ -21,7 +21,10 @@ impl Display for CheckResult {
 
 impl Watson for WatsonData {
     fn check_host(&self, host: &HostDetails) -> CheckResult {
-        let check_url = host.url.replace("{}", &self.username);
+        let check_url = match &host.url_probe {
+            Some(url) => url.replace("{}", &self.username),
+            None => host.url.replace("{}", &self.username)
+        };
         let now = Instant::now();
         let mut headers = header::HeaderMap::new();
         // Insert user-agent, cuz some websites are retards
@@ -30,7 +33,7 @@ impl Watson for WatsonData {
         let client = reqwest::blocking::Client::builder()
             .default_headers(headers)
             .build().unwrap();
-
+        
         let request = match client.get(&check_url).send() {
             Ok(resp) => resp,
             Err(error) => {
@@ -79,13 +82,13 @@ impl Watson for WatsonData {
                 if request.text().unwrap().contains(&m.msgs[0]) {
                     CheckResult {
                         execution_time: elapsed,
-                        status: Status::Found,
+                        status: Status::NotFound,
                         url,
                     }
                 } else {
                     CheckResult {
                         execution_time: elapsed,
-                        status: Status::NotFound,
+                        status: Status::Found,
                         url,
                     }
                 }

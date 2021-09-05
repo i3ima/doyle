@@ -8,6 +8,7 @@ fn find_accounts() {
             error_type: ErrorType::StatusCode,
             error_msg: None,
             url: "https://vk.com/{}".to_string(),
+            url_probe: None,
         },
     )];
     let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(Some(host)).build();
