@@ -17,7 +17,8 @@ fn find_accounts() {
             status: Status::Found,
             url: format!("{}{}", "https://vk.com/", watson.username),
             execution_time: 0
-        }.status,
+        }
+        .status,
         watson.check_hosts(&watson.hosts)[0].status
     )
 }

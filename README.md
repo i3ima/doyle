@@ -9,7 +9,7 @@
 - [X] Write some tests
 - [X] Rework junky init-code
 - [X] Handle all possible scenarious of response
-- [ ] MPSC
+- [X] Parallelization with rayon
 - [ ] logging and reports generation 
 - [ ] Documentation
 - [ ] Add error handling. But should I?

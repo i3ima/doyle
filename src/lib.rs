@@ -1,5 +1,7 @@
 pub use crate::watson::*;
 use colored::Colorize;
+use rayon::prelude::*;
+use rayon::ThreadPoolBuilder;
 use reqwest::header;
 pub use reqwest::{Response, StatusCode};
 use std::collections::HashMap;
@@ -11,11 +13,7 @@ mod watson;
 impl Display for CheckResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let result_str = format!("{} {}ms elapsed", self.url, self.execution_time);
-        if let Status::Found = self.status {
-            write!(f, "{} {}", "[OK]".green(), result_str)
-        } else {
-            write!(f, "{} {}", "[ERR]".red(), result_str)
-        }
+        write!(f, "{} {}", "[OK]".green(), result_str)
     }
 }
 
@@ -23,17 +21,21 @@ impl Watson for WatsonData {
     fn check_host(&self, host: &HostDetails) -> CheckResult {
         let check_url = match &host.url_probe {
             Some(url) => url.replace("{}", &self.username),
-            None => host.url.replace("{}", &self.username)
+            None => host.url.replace("{}", &self.username),
         };
         let now = Instant::now();
         let mut headers = header::HeaderMap::new();
         // Insert user-agent, cuz some websites are retards
-        headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"));
+        headers.insert(
+            header::USER_AGENT,
+            header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"),
+        );
 
         let client = reqwest::blocking::Client::builder()
             .default_headers(headers)
-            .build().unwrap();
-        
+            .build()
+            .unwrap();
+
         let request = match client.get(&check_url).send() {
             Ok(resp) => resp,
             Err(error) => {
@@ -102,11 +104,17 @@ impl Watson for WatsonData {
     }
 
     fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult> {
+        ThreadPoolBuilder::new()
+            .num_threads(22)
+            .build_global()
+            .unwrap();
         hosts
-            .iter()
-            .map(move |host| {
+            .par_iter()
+            .map(|host| {
                 let result = self.check_host(&host.1);
-                println!("{}", result);
+                if let Status::Found = result.status {
+                    println!("{}", result);
+                }
                 result
             })
             .collect()
