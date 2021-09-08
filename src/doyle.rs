@@ -1,4 +1,4 @@
-//! # watson-inner
+//! # doyle-inner
 //! 
 //! Contains a description of data model and core traits
 
@@ -108,21 +108,21 @@ pub struct CheckResult {
 }
 
 #[derive(Default)]
-pub struct WatsonData {
+pub struct DoyleData {
     pub username: String,
     pub hosts: Vec<(String, HostDetails)>,
 }
 
-pub trait Watson {
+pub trait Doyle {
     fn check_host(&self, host: &HostDetails) -> CheckResult;
 
     fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult>;
 
-    fn builder() -> WatsonBuilder;
+    fn builder() -> DoyleBuilder;
 }
 
 #[derive(Default)]
-pub struct WatsonBuilder {
+pub struct DoyleBuilder {
     pub username: String,
     pub hosts: Vec<(String, HostDetails)>,
 }

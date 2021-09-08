@@ -1,11 +1,11 @@
-//! # Watson
+//! # Doyle
 //!
-//! `watson` is a tool for quick search of social-media accounts by username
+//! `doyle` is a tool for quick search of social-media accounts by username
 
 #![deny(missing_docs)]
 #![deny(unreachable_pub)]
 
-pub use crate::watson::*;
+pub use crate::doyle::*;
 use colored::Colorize;
 use rayon::prelude::*;
 use rayon::ThreadPoolBuilder;
@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::time::Instant;
 
-mod watson;
+mod doyle;
 
 impl Display for CheckResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -24,7 +24,7 @@ impl Display for CheckResult {
     }
 }
 
-impl Watson for WatsonData {
+impl Doyle for DoyleData {
     /// Makes check for provided host
     ///
     /// # Arguments
@@ -33,10 +33,10 @@ impl Watson for WatsonData {
     ///
     /// # Example
     /// ```
-    /// use watson::*;
+    /// use doyle::*;
     ///
-    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
-    /// watson.check_host(&HostDetails {
+    /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
+    /// doyle.check_host(&HostDetails {
     ///    error_type: ErrorType::StatusCode,
     ///    url: "https://vk.com/{}".to_string(),
     ///    url_probe: None,
@@ -136,10 +136,10 @@ impl Watson for WatsonData {
     ///
     /// Example
     /// ```
-    /// use watson::*;
+    /// use doyle::*;
     /// 
-    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
-    /// watson.check_hosts(&watson.hosts);
+    /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
+    /// doyle.check_hosts(&doyle.hosts);
     /// ```
     fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult> {
         ThreadPoolBuilder::new()
@@ -158,12 +158,12 @@ impl Watson for WatsonData {
             .collect()
     }
 
-    fn builder() -> WatsonBuilder {
-        WatsonBuilder::default()
+    fn builder() -> DoyleBuilder {
+        DoyleBuilder::default()
     }
 }
 
-impl WatsonBuilder {
+impl DoyleBuilder {
     /// Load json either from file or from provided argument
     ///
     /// # Arguments 
@@ -183,7 +183,7 @@ impl WatsonBuilder {
         self
     }
 
-    /// Returns a new Watson builder
+    /// Returns a new Doyle builder
     ///
     /// # Arguments
     ///
@@ -192,20 +192,20 @@ impl WatsonBuilder {
     /// # Examples
     ///
     /// ```
-    /// use watson::*;
+    /// use doyle::*;
     ///
-    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
-    /// watson.check_hosts(&watson.hosts); 
+    /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
+    /// doyle.check_hosts(&doyle.hosts); 
     /// ```
-    pub fn new(username: &str) -> WatsonBuilder {
-        WatsonBuilder {
+    pub fn new(username: &str) -> DoyleBuilder {
+        DoyleBuilder {
             username: username.to_string(),
             hosts: vec![],
         }
     }
-    /// Returns instance of watson
-    pub fn build(self) -> WatsonData {
-        WatsonData {
+    /// Returns instance of doyle
+    pub fn build(self) -> DoyleData {
+        DoyleData {
             hosts: self.hosts,
             username: self.username,
         }

@@ -1,7 +1,7 @@
 use std::env;
 
 use std::time::Instant;
-use watson::*;
+use doyle::*;
 
 fn main() {
     let now = Instant::now();
@@ -10,7 +10,7 @@ fn main() {
         panic!("Not enough arguments")
     }
     let username = &args[1];
-    let watson = WatsonBuilder::new(username).load_json(None).build();
-    watson.check_hosts(&watson.hosts);
+    let doyle = DoyleBuilder::new(username).load_json(None).build();
+    doyle.check_hosts(&doyle.hosts);
     println!("Total execution time is {}ms", now.elapsed().as_millis())
 }

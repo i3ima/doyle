@@ -1,12 +1,12 @@
-# Watson, a tool for searching social accounts, insipred by sherlock-py
+# Doyle, a tool for searching social accounts, insipred by sherlock-py
 
 ## Usage
 ```rust
-use watson::*;
+use doyle::*;
 
 fn main() {
-    let watson = WatsonBuilder::new("i3ima").load_json(None).build();
-    watson.check_hosts(&watson.hosts);
+    let doyle = DoyleBuilder::new("i3ima").load_json(None).build();
+    doyle.check_hosts(&doyle.hosts);
 }
 ```
 

@@ -1,4 +1,4 @@
-use watson::*;
+use doyle::*;
 
 #[test]
 fn find_accounts() {
@@ -11,14 +11,14 @@ fn find_accounts() {
             url_probe: None,
         },
     )];
-    let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(Some(host)).build();
+    let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(Some(host)).build();
     assert_eq!(
         CheckResult {
             status: Status::Found,
-            url: format!("{}{}", "https://vk.com/", watson.username),
+            url: format!("{}{}", "https://vk.com/", doyle.username),
             execution_time: 0
         }
         .status,
-        watson.check_hosts(&watson.hosts)[0].status
+        doyle.check_hosts(&doyle.hosts)[0].status
     )
 }
