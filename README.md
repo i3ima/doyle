@@ -1,4 +1,4 @@
-# Doyle, a tool for searching social accounts, insipred by sherlock-py
+# Doyle, a tool for searching social-media accounts, insipred by sherlock-py
 
 ## Usage
 ```rust

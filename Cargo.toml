@@ -2,8 +2,14 @@ cargo-features = ["strip"]
 
 [package]
 name = "doyle"
+description = "Tool for searching social-media accounts"
+documentation = "https://docs.rs/doyle"
+readme = "README.md"
+repository = "https://github.com/i3ima/doyle"
+license = "MIT"
+exclude = ["/.idea/*", "/.vscode/*"]
 version = "0.0.1"
-
+authors = ["i3ima <hueputalo.rubin@gmail.com>"]
 edition = "2018"
 
 [dependencies]
