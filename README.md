@@ -1,6 +1,14 @@
 # Watson, a tool for searching social accounts, insipred by sherlock-py
 
-## At the moment, the code is very crappy and some of the core features are not working properly
+## Usage
+```rust
+use watson::*;
+
+fn main() {
+    let watson = WatsonBuilder::new("i3ima").load_json(None).build();
+    watson.check_hosts(&watson.hosts);
+}
+```
 
 ## TODO
 
@@ -11,7 +19,7 @@
 - [X] Handle all possible scenarious of response
 - [X] Parallelization with rayon
 - [ ] logging and reports generation 
-- [ ] Documentation
+- [X] Documentation
 - [ ] Add error handling. But should I?
 - [ ] Add dockerfile
 - [ ] Interactive search after full completion

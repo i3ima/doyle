@@ -1,3 +1,10 @@
+//! # Watson
+//!
+//! `watson` is a tool for quick search of social-media accounts by username
+
+#![deny(missing_docs)]
+#![deny(unreachable_pub)]
+
 pub use crate::watson::*;
 use colored::Colorize;
 use rayon::prelude::*;
@@ -18,10 +25,28 @@ impl Display for CheckResult {
 }
 
 impl Watson for WatsonData {
-    fn check_host(&self, host: &HostDetails) -> CheckResult {
-        let check_url = match &host.url_probe {
+    /// Makes check for provided host
+    ///
+    /// # Arguments
+    ///
+    /// * `host` - struct of HostDetails type
+    ///
+    /// # Example
+    /// ```
+    /// use watson::*;
+    ///
+    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
+    /// watson.check_host(&HostDetails {
+    ///    error_type: ErrorType::StatusCode,
+    ///    url: "https://vk.com/{}".to_string(),
+    ///    url_probe: None,
+    ///    error_msg: None
+    /// }); 
+    /// ```
+    fn check_host(&self, host_details: &HostDetails) -> CheckResult {
+        let check_url = match &host_details.url_probe {
             Some(url) => url.replace("{}", &self.username),
-            None => host.url.replace("{}", &self.username),
+            None => host_details.url.replace("{}", &self.username),
         };
         let now = Instant::now();
         let mut headers = header::HeaderMap::new();
@@ -53,7 +78,7 @@ impl Watson for WatsonData {
 
         // rn this is stupid asf
         // TODO: Replace this with more clever solution
-        match host {
+        match host_details {
             HostDetails {
                 error_type: ErrorType::StatusCode,
                 ..
@@ -103,9 +128,22 @@ impl Watson for WatsonData {
         }
     }
 
+    /// Performs check for all hosts
+    ///
+    /// Arguments
+    ///
+    /// * `hosts` - list of hosts
+    ///
+    /// Example
+    /// ```
+    /// use watson::*;
+    /// 
+    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
+    /// watson.check_hosts(&watson.hosts);
+    /// ```
     fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult> {
         ThreadPoolBuilder::new()
-            .num_threads(22)
+            .num_threads(16)
             .build_global()
             .unwrap();
         hosts
@@ -126,6 +164,11 @@ impl Watson for WatsonData {
 }
 
 impl WatsonBuilder {
+    /// Load json either from file or from provided argument
+    ///
+    /// # Arguments 
+    ///
+    /// * `data` - vec with hosts, optional
     pub fn load_json(mut self, data: Option<Vec<(String, HostDetails)>>) -> Self {
         if let Some(json) = data {
             println!("Using JSON from user input");
@@ -140,13 +183,27 @@ impl WatsonBuilder {
         self
     }
 
+    /// Returns a new Watson builder
+    ///
+    /// # Arguments
+    ///
+    /// * `username` - A string slice that holds username that gonna be searched
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use watson::*;
+    ///
+    /// let watson: WatsonData = WatsonBuilder::new("i3ima").load_json(None).build();
+    /// watson.check_hosts(&watson.hosts); 
+    /// ```
     pub fn new(username: &str) -> WatsonBuilder {
         WatsonBuilder {
             username: username.to_string(),
             hosts: vec![],
         }
     }
-
+    /// Returns instance of watson
     pub fn build(self) -> WatsonData {
         WatsonData {
             hosts: self.hosts,
