@@ -35,13 +35,15 @@ impl Doyle for DoyleData {
     /// ```
     /// use doyle::*;
     ///
-    /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
-    /// doyle.check_host(&HostDetails {
+    /// DoyleBuilder::new("i3ima")
+    //      .load_json(None)
+    ///     .build()
+    ///     .check_host(&HostDetails {
     ///    error_type: ErrorType::StatusCode,
     ///    url: "https://vk.com/{}".to_string(),
     ///    url_probe: None,
-    ///    error_msg: None
-    /// }); 
+    ///    error_msg: None   
+    /// });
     /// ```
     fn check_host(&self, host_details: &HostDetails) -> CheckResult {
         let check_url = match &host_details.url_probe {
@@ -137,9 +139,11 @@ impl Doyle for DoyleData {
     /// Example
     /// ```
     /// use doyle::*;
-    /// 
-    /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
-    /// doyle.check_hosts(&doyle.hosts);
+    ///
+    /// DoyleBuilder::new("i3ima")
+    ///     .load_json(None)
+    ///     .build()
+    ///     .check_hosts();
     /// ```
     fn check_hosts(&self) -> Vec<CheckResult> {
         ThreadPoolBuilder::new()
@@ -166,7 +170,7 @@ impl Doyle for DoyleData {
 impl DoyleBuilder {
     /// Load json either from file or from provided argument
     ///
-    /// # Arguments 
+    /// # Arguments
     ///
     /// * `data` - vec with hosts, optional
     pub fn load_json(mut self, data: Option<Vec<(String, HostDetails)>>) -> Self {
@@ -195,7 +199,6 @@ impl DoyleBuilder {
     /// use doyle::*;
     ///
     /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
-    /// doyle.check_hosts(&doyle.hosts); 
     /// ```
     pub fn new(username: &str) -> DoyleBuilder {
         DoyleBuilder {
