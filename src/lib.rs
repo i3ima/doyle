@@ -141,12 +141,12 @@ impl Doyle for DoyleData {
     /// let doyle: DoyleData = DoyleBuilder::new("i3ima").load_json(None).build();
     /// doyle.check_hosts(&doyle.hosts);
     /// ```
-    fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult> {
+    fn check_hosts(&self) -> Vec<CheckResult> {
         ThreadPoolBuilder::new()
             .num_threads(16)
             .build_global()
-            .unwrap();
-        hosts
+            .expect("Cannot create threadpool");
+        self.hosts
             .par_iter()
             .map(|host| {
                 let result = self.check_host(&host.1);
@@ -174,7 +174,7 @@ impl DoyleBuilder {
             println!("Using JSON from user input");
             self.hosts = json;
         } else {
-            let json = include_str!("../assets/data.json");
+            let json = include_str!("assets/data.json");
             let h: HashMap<String, HostDetails> =
                 serde_json::from_str(json).expect("Cannot read json");
             println!("Using JSON from file");

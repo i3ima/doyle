@@ -116,7 +116,7 @@ pub struct DoyleData {
 pub trait Doyle {
     fn check_host(&self, host: &HostDetails) -> CheckResult;
 
-    fn check_hosts(&self, hosts: &[(String, HostDetails)]) -> Vec<CheckResult>;
+    fn check_hosts(&self) -> Vec<CheckResult>;
 
     fn builder() -> DoyleBuilder;
 }
