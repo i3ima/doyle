@@ -1,5 +1,7 @@
 # Doyle, a tool for searching social-media accounts, insipred by sherlock-py
 
+![crates.io](https://img.shields.io/crates/v/doyle.svg)
+
 ## Usage
 ```rust
 use doyle::*;
@@ -21,5 +23,4 @@ fn main() {
 - [ ] logging and reports generation 
 - [X] Documentation
 - [ ] Add error handling. But should I?
-- [ ] Add dockerfile
 - [ ] Interactive search after full completion
