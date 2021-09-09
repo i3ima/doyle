@@ -12,7 +12,8 @@ fn main() {
 }
 ```
 
-## TODO
+<details open>
+<summary>TODO</summary>
 
 - [X] Load hosts list at compile-time and store it as static string
 - [X] Adapt sherlock-py json model
@@ -24,3 +25,5 @@ fn main() {
 - [X] Documentation
 - [ ] Add error handling. But should I?
 - [ ] Interactive search after full completion
+
+</details>
