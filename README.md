@@ -12,7 +12,7 @@ fn main() {
 }
 ```
 
-<details open>
+<details>
 <summary>TODO</summary>
 
 - [X] Load hosts list at compile-time and store it as static string
