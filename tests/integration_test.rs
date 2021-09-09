@@ -19,6 +19,6 @@ fn find_accounts() {
             execution_time: 0
         }
         .status,
-        doyle.check_hosts(&doyle.hosts)[0].status
+        doyle.check_hosts()[0].status
     )
 }
